@@ -31,6 +31,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@tiptap/extension-link": "^2.0.0-beta.37",
 		"@tiptap/extension-placeholder": "^2.0.0-beta.48",
 		"@tiptap/extension-task-item": "^2.0.0-beta.32",
 		"@tiptap/extension-task-list": "^2.0.0-beta.26",

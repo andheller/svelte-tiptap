@@ -1,0 +1,399 @@
+{
+	"type": "doc",
+	"content": [
+		{
+			"type": "paragraph",
+			"content": [
+				{ "type": "text", "text": "Building a Notion editor clone with " },
+				{
+					"type": "text",
+					"marks": [
+						{ "type": "link", "attrs": { "href": "https://svelte.dev/", "target": "_blank" } }
+					],
+					"text": "Svelte"
+				},
+				{ "type": "text", "text": ", " },
+				{
+					"type": "text",
+					"marks": [
+						{
+							"type": "link",
+							"attrs": { "href": "https://tiptap.dev/installation/svelte", "target": "_blank" }
+						}
+					],
+					"text": "Tiptap"
+				},
+				{ "type": "text", "text": " and " },
+				{
+					"type": "text",
+					"marks": [
+						{ "type": "link", "attrs": { "href": "https://tailwindcss.com/", "target": "_blank" } }
+					],
+					"text": "Tailwind"
+				},
+				{ "type": "text", "text": "." },
+				{ "type": "hardBreak" },
+				{
+					"type": "text",
+					"text": "This document is the live demo of the clone! Try editing this text, and using slash commands to insert blocks. Check out the "
+				},
+				{
+					"type": "text",
+					"marks": [
+						{
+							"type": "link",
+							"attrs": { "href": "https://github.com/andheller/svelte-tiptap", "target": "_blank" }
+						}
+					],
+					"text": "repo in Github"
+				},
+				{ "type": "text", "text": " to try it locally yourself." }
+			]
+		},
+		{
+			"type": "heading",
+			"attrs": { "level": 3 },
+			"content": [{ "type": "text", "text": "What is Tiptap?" }]
+		},
+		{
+			"type": "paragraph",
+			"content": [
+				{ "type": "text", "text": "Tiptap is a rich content editor that is based on " },
+				{
+					"type": "text",
+					"marks": [
+						{ "type": "link", "attrs": { "href": "https://prosemirror.net/", "target": "_blank" } }
+					],
+					"text": "Prosemirror"
+				},
+				{ "type": "text", "text": " that is:" }
+			]
+		},
+		{
+			"type": "taskList",
+			"content": [
+				{
+					"type": "taskItem",
+					"attrs": { "checked": true },
+					"content": [
+						{
+							"type": "paragraph",
+							"content": [
+								{ "type": "text", "marks": [{ "type": "bold" }], "text": "Headless-" },
+								{
+									"type": "text",
+									"text": " No CSS included. You have control of the style and markup. (We are using the "
+								},
+								{
+									"type": "text",
+									"marks": [
+										{
+											"type": "link",
+											"attrs": {
+												"href": "https://tailwindcss.com/docs/typography-plugin",
+												"target": "_blank"
+											}
+										}
+									],
+									"text": "Tailwind Typography plugin"
+								},
+								{ "type": "text", "text": " for this demo)" }
+							]
+						}
+					]
+				},
+				{
+					"type": "taskItem",
+					"attrs": { "checked": true },
+					"content": [
+						{
+							"type": "paragraph",
+							"content": [
+								{ "type": "text", "marks": [{ "type": "bold" }], "text": "Collaborative-" },
+								{
+									"type": "text",
+									"text": " Real-time collaboration and offline syncing powered by "
+								},
+								{
+									"type": "text",
+									"marks": [
+										{
+											"type": "link",
+											"attrs": { "href": "https://github.com/yjs/yjs", "target": "_blank" }
+										}
+									],
+									"text": "Y.js"
+								}
+							]
+						}
+					]
+				},
+				{
+					"type": "taskItem",
+					"attrs": { "checked": true },
+					"content": [
+						{
+							"type": "paragraph",
+							"content": [
+								{ "type": "text", "marks": [{ "type": "bold" }], "text": "Framework Agnostic-" },
+								{ "type": "text", "text": " Bring any framework or Vanilla JS" }
+							]
+						}
+					]
+				},
+				{
+					"type": "taskItem",
+					"attrs": { "checked": true },
+					"content": [
+						{
+							"type": "paragraph",
+							"content": [
+								{ "type": "text", "marks": [{ "type": "bold" }], "text": "Extension Friendly-" },
+								{ "type": "text", "text": " " },
+								{
+									"type": "text",
+									"marks": [
+										{
+											"type": "link",
+											"attrs": { "href": "https://tiptap.dev/extensions", "target": "_blank" }
+										}
+									],
+									"text": "Over 50 extensions"
+								},
+								{ "type": "text", "text": " out of the box and the ability to create your own" }
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"type": "paragraph",
+			"content": [
+				{
+					"type": "text",
+					"text": "Building on top of Prosemirror makes it a very stable option, but with a much cleaner API to work with. "
+				}
+			]
+		},
+		{
+			"type": "heading",
+			"attrs": { "level": 3 },
+			"content": [{ "type": "text", "text": "Extensions" }]
+		},
+		{
+			"type": "paragraph",
+			"content": [{ "type": "text", "text": "This demo is using these extensions:" }]
+		},
+		{
+			"type": "taskList",
+			"content": [
+				{
+					"type": "taskItem",
+					"attrs": { "checked": true },
+					"content": [
+						{
+							"type": "paragraph",
+							"content": [
+								{
+									"type": "text",
+									"marks": [
+										{
+											"type": "link",
+											"attrs": {
+												"href": "https://tiptap.dev/api/extensions/starter-kit",
+												"target": "_blank"
+											}
+										}
+									],
+									"text": "StarterKit"
+								},
+								{
+									"type": "text",
+									"text": "- This is a collection of common extensions to get you started"
+								}
+							]
+						}
+					]
+				},
+				{
+					"type": "taskItem",
+					"attrs": { "checked": true },
+					"content": [
+						{
+							"type": "paragraph",
+							"content": [
+								{
+									"type": "text",
+									"marks": [
+										{
+											"type": "link",
+											"attrs": {
+												"href": "https://tiptap.dev/api/extensions/placeholder",
+												"target": "_blank"
+											}
+										}
+									],
+									"text": "Placeholder"
+								},
+								{ "type": "text", "marks": [{ "type": "bold" }], "text": "- " },
+								{
+									"type": "text",
+									"text": "This is to add the empty class that we can target with CSS to add the placeholder text like \"Type '/' for commands\""
+								}
+							]
+						}
+					]
+				},
+				{
+					"type": "taskItem",
+					"attrs": { "checked": true },
+					"content": [
+						{
+							"type": "paragraph",
+							"content": [
+								{
+									"type": "text",
+									"marks": [
+										{
+											"type": "link",
+											"attrs": {
+												"href": "https://tiptap.dev/api/nodes/task-list",
+												"target": "_blank"
+											}
+										}
+									],
+									"text": "TaskList"
+								},
+								{ "type": "text", "text": " and " },
+								{
+									"type": "text",
+									"marks": [
+										{
+											"type": "link",
+											"attrs": {
+												"href": "https://tiptap.dev/api/nodes/task-item",
+												"target": "_blank"
+											}
+										}
+									],
+									"text": "TaskItem"
+								},
+								{ "type": "text", "text": "- are for todo lists (like this)" }
+							]
+						}
+					]
+				},
+				{
+					"type": "taskItem",
+					"attrs": { "checked": true },
+					"content": [
+						{
+							"type": "paragraph",
+							"content": [
+								{
+									"type": "text",
+									"marks": [
+										{
+											"type": "link",
+											"attrs": { "href": "https://tiptap.dev/api/marks/link", "target": "_blank" }
+										}
+									],
+									"text": "Link"
+								},
+								{
+									"type": "text",
+									"text": "- This is to add links. You can add the ctrl/command k shortcut to this with configure. You can also add a link by pasting the link on to text"
+								}
+							]
+						}
+					]
+				},
+				{
+					"type": "taskItem",
+					"attrs": { "checked": true },
+					"content": [
+						{
+							"type": "paragraph",
+							"content": [
+								{
+									"type": "text",
+									"marks": [
+										{
+											"type": "link",
+											"attrs": {
+												"href": "https://tiptap.dev/api/utilities/suggestion",
+												"target": "_blank"
+											}
+										}
+									],
+									"text": "Suggestion"
+								},
+								{ "type": "text", "text": "- this is the backbone that makes the " },
+								{
+									"type": "text",
+									"marks": [
+										{
+											"type": "link",
+											"attrs": {
+												"href": "https://tiptap.dev/experiments/commands",
+												"target": "_blank"
+											}
+										}
+									],
+									"text": "Slash Commands"
+								},
+								{ "type": "text", "text": " work" }
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"type": "heading",
+			"attrs": { "level": 3 },
+			"content": [{ "type": "text", "text": "Tiptap Output" }]
+		},
+		{
+			"type": "paragraph",
+			"content": [
+				{
+					"type": "text",
+					"text": "Tiptap has JSON and HTML output by default. They also have top notch support for "
+				},
+				{
+					"type": "text",
+					"marks": [
+						{
+							"type": "link",
+							"attrs": {
+								"href": "https://docs.yjs.dev/ecosystem/editor-bindings/tiptap2",
+								"target": "_blank"
+							}
+						}
+					],
+					"text": "Yjs"
+				},
+				{ "type": "text", "text": " that can be added with an " },
+				{
+					"type": "text",
+					"marks": [
+						{
+							"type": "link",
+							"attrs": {
+								"href": "https://tiptap.dev/guide/collaborative-editing",
+								"target": "_blank"
+							}
+						}
+					],
+					"text": "extension"
+				},
+				{
+					"type": "text",
+					"text": " to enable real-time collaboration, syncing between different devices and offline editing easy."
+				}
+			]
+		}
+	]
+}

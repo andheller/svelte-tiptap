@@ -36,14 +36,15 @@ export default {
 			},
 			{
 				title: 'Bullet List',
+				subtitle: 'Pew pew pew',
 				command: ({ editor, range }) => {
 					editor.commands.deleteRange(range);
-
 					editor.commands.toggleBulletList();
 				}
 			},
 			{
 				title: 'Numbered List',
+				subtitle: '1, 2, 3, 4...',
 				command: ({ editor, range }) => {
 					editor.commands.deleteRange(range);
 
