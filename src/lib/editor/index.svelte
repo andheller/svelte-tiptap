@@ -194,5 +194,6 @@
 		font-size: 15px;
 		line-height: 20px;
 		padding: 0px 7px;
+		width: 126px;
 	}
 </style>
