@@ -2,190 +2,115 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import { Editor } from '@tiptap/core';
-	import StarterKit from '@tiptap/starter-kit';
-	import Placeholder from '@tiptap/extension-placeholder';
-	import TaskList from '@tiptap/extension-task-list';
-	import TaskItem from '@tiptap/extension-task-item';
-	import Link from '@tiptap/extension-link';
-	import suggestion from './suggestion';
-	import Commands from './command';
-	import CommandList from './CommandList.svelte';
-	import { slashVisible, slashItems, slashProps, editorWidth } from '$lib/stores';
+	import BubbleMenu from '@tiptap/extension-bubble-menu';
+	import Collaboration from '@tiptap/extension-collaboration';
+	import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
+	import { defaultExtensions } from './extensions';
+	import Toolbar from './Toolbar.svelte';
+	import { get_color, get_name } from '$lib/utils';
+	import * as Y from 'yjs';
+	import YProvider from 'y-partykit/provider';
+	import * as awarenessProtocol from 'y-protocols/awareness.js';
 
-	export let content;
-	let output = false;
-	let outputType;
+	let ydoc;
+	let element, toolbar, component, content_editor;
 
-	let selectedIndex = 0;
-	$: selectedIndex = $slashVisible ? selectedIndex : 0;
-	$: $editorWidth = w ? w : '0';
+	let name = get_name(); //get a fake name, but could get real name here.
+	let color = get_color();
 
-	function handleKeydown(event) {
-		if (!$slashVisible) return;
-		if (event.key === 'ArrowUp') {
-			event.preventDefault();
+	function newYdoc() {
+		if (!browser) return;
+		if (ydoc) ydoc.destroy();
+		if (!element) return;
 
-			upHandler();
-			return true;
-		}
-		if (event.key === 'ArrowDown') {
-			event.preventDefault();
+		ydoc = new Y.Doc();
 
-			downHandler();
-			return true;
-		}
+		const providerURL = 'party.andheller.partykit.dev';
 
-		if (event.key === 'Enter') {
-			event.preventDefault();
-			enterHandler();
-			return true;
-		}
-
-		return false;
-	}
-
-	function upHandler() {
-		selectedIndex = (selectedIndex + $slashItems.length - 1) % $slashItems.length;
-	}
-
-	function downHandler() {
-		selectedIndex = (selectedIndex + 1) % $slashItems.length;
-	}
-
-	function enterHandler() {
-		selectItem(selectedIndex);
-	}
-	function selectItem(index) {
-		const item = $slashItems[index];
-
-		if (item) {
-			//editor.chain().focus().toggleBold().run();
-			//return console.log(item);
-			let range = $slashProps.range;
-			item.command({ editor, range });
-		}
-	}
-
-	let element, editor, w;
-
-	onMount(() => {
-		if (browser) {
-			editor = new Editor({
-				element: element,
-				editorProps: {
-					attributes: {
-						class: 'focus:outline-none flex flex-col items-center px-3 md:px-0'
-					}
-				},
-				extensions: [
-					StarterKit,
-					Placeholder,
-					TaskList,
-					TaskItem,
-					Link,
-					Commands.configure({
-						suggestion
-					})
-				],
-				content,
-				onTransaction: () => {
-					// force re-render so `editor.isActive` works as expected
-					editor = editor;
-				},
-				onUpdate: ({ editor }) => {
-					// send the content to an API here
+		const extensions = [
+			...defaultExtensions,
+			BubbleMenu.configure({
+				element: toolbar
+			}),
+			Collaboration.configure({
+				document: ydoc
+			}),
+			CollaborationCursor.configure({
+				provider: new YProvider(providerURL, 'svnotion', ydoc, {
+					awareness: new awarenessProtocol.Awareness(ydoc)
+				}),
+				user: {
+					name,
+					color
 				}
-			});
-		}
+			})
+		];
+
+		toolbar = document.createElement('div');
+		component = new Toolbar({
+			target: toolbar
+		});
+
+		element.innerHTML = '';
+		content_editor = new Editor({
+			element,
+			editorProps: {
+				attributes: {
+					'data-editor': 'true',
+					class: 'focus:outline-none flex flex-col items-stretch'
+				}
+			},
+			extensions,
+			onTransaction: () => {
+				content_editor = content_editor;
+			}
+		});
+		component.$set({ content_editor });
+	}
+
+	onMount(async () => {
+		newYdoc();
 	});
 
 	onDestroy(() => {
-		if (editor) {
-			editor.destroy();
-		}
+		if (component) component.$destroy();
+		if (content_editor) content_editor.destroy();
 	});
 </script>
 
-<div class="prose prose-slate sm:prose-xl lg:prose-3xl" bind:clientWidth={w}>
-	<div bind:this={element} on:keydown|capture={handleKeydown} />
-</div>
-
-<CommandList {selectedIndex} />
-
-<div class="sm:flex my-4">
-	<button
-		on:click={() => {
-			output = editor.getJSON();
-			outputType = 'json';
-		}}
-		class="m-2 border rounded-full px-4 py-2 border-slate-500 {outputType == 'json'
-			? 'bg-blue-200'
-			: ''}">See JSON Output</button
-	>
-	<button
-		on:click={() => {
-			output = editor.getHTML();
-			outputType = 'html';
-		}}
-		class=" m-2 border rounded-full px-4 py-2 border-slate-500 {outputType == 'html'
-			? 'bg-blue-200'
-			: ''}">See HTML Output</button
-	>
-</div>
-
-{#if output}
-	<div class="sm:flex flex-row-reverse">
-		<button
-			class="underline font-semibold text-slate-700 hover:text-slate-800 cursor p-2"
-			on:click={() => (output = false)}
-		>
-			Clear output
-		</button>
-		<button
-			class="underline font-semibold text-slate-700 hover:text-slate-800 cursor p-2"
-			on:click={() => navigator.clipboard.writeText(JSON.stringify(output))}
-		>
-			Copy output
-		</button>
-	</div>
-	{JSON.stringify(output)}
-{/if}
-<hr />
-<div class="my-8 p-2 prose prose-slate sm:prose-xl lg:prose-3xl">
-	<h3>Take it further</h3>
-	<p>
-		Take this starting point and make it your own! If you have questions, feel free to <a
-			href="https://twitter.com/ndrewheller"
-			target="_blank">DM me on Twitter</a
-		>. Check out the links below to learn more about creating custom blocks.
-	</p>
-	<ul>
-		<li>
-			<a href="https://tiptap.dev/guide/custom-extensions" target="_blank">
-				Tiptap Custom Extension Guide
-			</a>
-		</li>
-		<li>
-			<a href="https://github.com/sibiraj-s/svelte-tiptap" target="_blank">
-				Creating a custom svelte block with Tiptap
-			</a>
-		</li>
-	</ul>
+<div class="loading relative prose prose-lg prose-gray">
+	<div bind:this={element} />
 </div>
 
 <style>
-	:global(h1, h2, h3, h4, h5, h6, p, ul, ol) {
+	:global(h1, h2, h3, h4, h5, h6, p, ul, li) {
 		width: 100%;
 	}
-	:global(.ProseMirror h1, .ProseMirror h2, .ProseMirror h3) {
-		margin-bottom: 0.5rem;
+
+	:global(ul, ol) {
+		margin: 0px !important;
 	}
 
+	:global(.ProseMirror) {
+		position: static !important;
+	}
 	:global(.ProseMirror p.is-empty::before) {
 		content: "Type '/' for commands";
 		color: #adb5bd;
 		float: left;
 		height: 0;
+	}
+	:global(.loading) {
+		animation: fadeIn 0.15s;
+	}
+
+	@keyframes fadeIn {
+		0% {
+			opacity: 0;
+		}
+		100% {
+			opacity: 1;
+		}
 	}
 	:global(.ProseMirror h1.is-empty::before) {
 		content: 'Heading 1';
@@ -223,23 +148,51 @@
 		float: left;
 		height: 0;
 	}
-
-	:global ul[data-type='taskList'] {
+	:global(.ProseMirror p) {
+		margin-top: 0px;
+	}
+	:global(ul[data-type='taskList']) {
 		list-style: none;
 		padding-left: 2px;
 	}
-	:global ul[data-type='taskList'] li {
+	:global(ul[data-type='taskList'] li) {
 		display: flex;
 		align-items: top;
 	}
-	:global ul[data-type='taskList'] li p {
-		margin: 0;
+	:global(ul[data-type='taskList'] li label) {
+		padding-right: 12px;
 	}
-	:global ul[data-type='taskList'] li label {
-		padding-right: 18px;
+	:global(ul, ol) {
+		margin-top: 0px !important;
 	}
-	:global ul[data-type='taskList'] li label input {
+	:global(li p, li p) {
+		margin-top: 0px !important;
+		margin-bottom: 4px !important;
+	}
+
+	:global(ul[data-type='taskList'] li label input) {
 		border-radius: 0.25rem;
 		border-color: #cbd5e1;
+	}
+	:global(.max-width-content) {
+		max-width: var(--content-width);
+	}
+	:global(ul[data-type='taskList'] li div) {
+		margin-bottom: 0;
+	}
+
+	:global(span.collaboration-cursor__caret.ProseMirror-widget) {
+		position: relative;
+		border: 1px solid;
+	}
+
+	:global(.collaboration-cursor__label) {
+		position: absolute;
+		top: -20px;
+		left: -1px;
+		font-weight: 400;
+		font-size: 15px;
+		line-height: 20px;
+		padding: 0px 7px;
 	}
 </style>
